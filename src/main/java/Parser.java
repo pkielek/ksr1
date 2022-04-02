@@ -51,7 +51,7 @@ public class Parser {
                                     childNode(4).
                                     toString())
                     .replace(" Reuter \u0003", "")
-                    .replace(",", "")));
+                    .replace(",", "").split(" ")));
             // calculate publish time (number of minutes from 0 to 1339)
             String articleDatetimeString = articleNode.childNode(1).childNode(0).toString().trim();
             int articleDateTimeStringLength = articleDatetimeString.length();

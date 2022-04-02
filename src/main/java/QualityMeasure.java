@@ -42,6 +42,11 @@ public class QualityMeasure {
         }
     }
 
+    private int getCountryWeight(Country country) {
+        return confusionMatrix.getOrDefault("TP_" + country,0) +
+                confusionMatrix.getOrDefault("FN_" + country,0);
+    }
+
     public double calcAccuracy() {
         double sum = 0.0;
         for (Country country : Country.values()) {
@@ -58,12 +63,11 @@ public class QualityMeasure {
 
     public double calcGlobalPrecision() {
         double numerator = 0.0;
-        double denominator = 0.0;
         for (Country country : Country.values()) {
-            numerator += (calcPrecision(country) * actualAndPredicted.size());
-            denominator += actualAndPredicted.size();
+            int weight = getCountryWeight(country);
+            numerator += (calcPrecision(country) * weight);
         }
-        return numerator / denominator;
+        return numerator / actualAndPredicted.size();
     }
 
     public double calcRecall(Country country) {
@@ -74,12 +78,11 @@ public class QualityMeasure {
 
     public double calcGlobalRecall() {
         double numerator = 0.0;
-        double denominator = 0.0;
         for (Country country : Country.values()) {
-            numerator += (calcRecall(country) * actualAndPredicted.size());
-            denominator += actualAndPredicted.size();
+            int weight = getCountryWeight(country);
+            numerator += (calcRecall(country) * weight);
         }
-        return numerator / denominator;
+        return numerator / actualAndPredicted.size();
     }
 
     public double calcF1Score(Country country) {

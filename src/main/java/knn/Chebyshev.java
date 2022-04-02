@@ -2,6 +2,7 @@ package knn;
 
 import data.Feature;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class Chebyshev implements Metric {

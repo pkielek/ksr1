@@ -14,8 +14,12 @@ public class App {
     public static void main(String[] args) throws IOException, ParseException {
         Scanner scanner = new Scanner(System.in);
         Parser parser = new Parser();
-        parser.loadArticles(new File("reut2-000.sgm"),0,1000);
-
+        parser.loadArticles(new File("reut2-000.sgm"),123,1);
+        parser.loadArticles(new File("reut2-000.sgm"),126,1);
+        Extraction e1 = new Extraction(parser.getLoadedArticles().get(0));
+        Extraction e2 = new Extraction(parser.getLoadedArticles().get(1));
+        System.out.println(e1.getFeatures());
+        System.out.println(e2.getFeatures());
 //        Measure measure = new NGramMeasure();
 //        System.out.println(measure.compare("unicocoa", "coconut"));
 //        List<Map<Country, Country>> countryMap = new ArrayList<>();

@@ -2,7 +2,9 @@ package data;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
+@ToString
 public class Feature {
     @Getter @Setter
     private Boolean isTextFeature;
