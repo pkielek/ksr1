@@ -6,15 +6,11 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class DictionaryStorage {
+public final class DictionaryStorage {
     @Getter
-    private final HashMap<String,Dictionary> dictionaryMap;
+    private final static HashMap<String,Dictionary> dictionaryMap = new HashMap<>();
 
-    public DictionaryStorage() {
-        dictionaryMap = new HashMap<>();
-    }
-
-    public void loadDictionary(String name, File file) throws IOException {
+    public static void loadDictionary(String name, File file) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String line = reader.readLine();
         ArrayList<String> words = new ArrayList<>();
