@@ -2,8 +2,9 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLOutput;
 import java.text.ParseException;
-import java.util.Scanner;
+import java.util.*;
 
+import data.Country;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -12,6 +13,29 @@ public class App {
         Scanner scanner = new Scanner(System.in);
         Parser parser = new Parser();
         parser.loadArticles(new File("reut2-000.sgm"),0,1000);
+
+//        List<Map<Country, Country>> countryMap = new ArrayList<>();
+//        countryMap.add(Map.of(Country.canada, Country.canada));
+//        countryMap.add(Map.of(Country.canada, Country.uk));
+//        countryMap.add(Map.of(Country.canada, Country.usa));
+//        countryMap.add(Map.of(Country.canada, Country.japan));
+//        countryMap.add(Map.of(Country.canada, Country.westgermany));
+//        countryMap.add(Map.of(Country.canada, Country.france));
+//        countryMap.add(Map.of(Country.usa, Country.canada));
+//        countryMap.add(Map.of(Country.usa, Country.uk));
+//        countryMap.add(Map.of(Country.usa, Country.usa));
+//        countryMap.add(Map.of(Country.usa, Country.japan));
+//        countryMap.add(Map.of(Country.usa, Country.westgermany));
+//        countryMap.add(Map.of(Country.usa, Country.france));
+//        countryMap.add(Map.of(Country.usa, Country.usa));
+//        countryMap.add(Map.of(Country.usa, Country.japan));
+//        countryMap.add(Map.of(Country.usa, Country.westgermany));
+//
+//        QualityMeasure qualityMeasure = new QualityMeasure(countryMap);
+//        System.out.println(qualityMeasure.calcAccuracy());
+//        System.out.println(qualityMeasure.calcGlobalPrecision());
+//        System.out.println(qualityMeasure.calcGlobalRecall());
+//        System.out.println(qualityMeasure.calcF1Score(Country.usa));
 
 //        System.out.println("Wybierz wariant programu:");
 //        System.out.println("1 - ręczne wprowadzanie parametrów");
