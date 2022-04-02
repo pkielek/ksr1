@@ -1,14 +1,18 @@
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLOutput;
+import java.text.ParseException;
 import java.util.Scanner;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 public class App {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ParseException {
         Scanner scanner = new Scanner(System.in);
+        Parser parser = new Parser();
+        parser.loadArticles(new File("reut2-000.sgm"),0,1000);
+
 //        System.out.println("Wybierz wariant programu:");
 //        System.out.println("1 - ręczne wprowadzanie parametrów");
 //        System.out.println("2 - skonfigurowany zestaw eksperymentów");
@@ -81,35 +85,35 @@ public class App {
 //        scanner.nextLine();
 //        System.out.print("Podaj kolejny plik lub zakończ wpisując X:");
 //        scanner.nextLine();
-        System.out.println("Wybierz sposób prezentacji wyników");
-        System.out.println("1 - Tekstowo");
-        System.out.println("2 - Kod LaTeX");
-        System.out.print("Twój wybór:");
-        scanner.nextLine();
-        System.out.println("Klasyfikacja trwa...");
-        System.out.println("Klasyfikacja zakończona, uzyskane wyniki:");
-        System.out.println("Liczba zbadanych artykułów: 800");
-        System.out.println("Accuracy: 80.0%");
-        System.out.println("Precision dla west-germany: 80.0%, 80/100");
-        System.out.println("Precision dla usa: 80.0%, 160/200");
-        System.out.println("Precision dla france: 80.0%, 80/100");
-        System.out.println("Precision dla uk: 80.0%, 160/200");
-        System.out.println("Precision dla canada: 80.0%, 80/100");
-        System.out.println("Precision dla japan: 80.0%, 80/100");
-        System.out.println("Precision ogólne: 80.0% 640/800");
-        System.out.println("Recall dla west-germany: 80.0%, 80/100");
-        System.out.println("Recall dla usa: 80.0%, 160/200");
-        System.out.println("Recall dla france: 80.0%, 80/100");
-        System.out.println("Recall dla uk: 80.0%, 160/200");
-        System.out.println("Recall dla canada: 80.0%, 80/100");
-        System.out.println("Recall dla japan: 80.0%, 80/100");
-        System.out.println("Recall ogólne: 80.0% 640/800");
-        System.out.println("Miara F1 dla west-germany: 80.0%, 80/100");
-        System.out.println("Miara F1 dla usa: 80.0%, 160/200");
-        System.out.println("Miara F1 dla france: 80.0%, 80/100");
-        System.out.println("Miara F1 dla uk: 80.0%, 160/200");
-        System.out.println("Miara F1 dla canada: 80.0%, 80/100");
-        System.out.println("Miara F1 dla japan: 80.0%, 80/100");
+//        System.out.println("Wybierz sposób prezentacji wyników");
+//        System.out.println("1 - Tekstowo");
+//        System.out.println("2 - Kod LaTeX");
+//        System.out.print("Twój wybór:");
+//        scanner.nextLine();
+//        System.out.println("Klasyfikacja trwa...");
+//        System.out.println("Klasyfikacja zakończona, uzyskane wyniki:");
+//        System.out.println("Liczba zbadanych artykułów: 800");
+//        System.out.println("Accuracy: 80.0%");
+//        System.out.println("Precision dla west-germany: 80.0%, 80/100");
+//        System.out.println("Precision dla usa: 80.0%, 160/200");
+//        System.out.println("Precision dla france: 80.0%, 80/100");
+//        System.out.println("Precision dla uk: 80.0%, 160/200");
+//        System.out.println("Precision dla canada: 80.0%, 80/100");
+//        System.out.println("Precision dla japan: 80.0%, 80/100");
+//        System.out.println("Precision ogólne: 80.0% 640/800");
+//        System.out.println("Recall dla west-germany: 80.0%, 80/100");
+//        System.out.println("Recall dla usa: 80.0%, 160/200");
+//        System.out.println("Recall dla france: 80.0%, 80/100");
+//        System.out.println("Recall dla uk: 80.0%, 160/200");
+//        System.out.println("Recall dla canada: 80.0%, 80/100");
+//        System.out.println("Recall dla japan: 80.0%, 80/100");
+//        System.out.println("Recall ogólne: 80.0% 640/800");
+//        System.out.println("Miara F1 dla west-germany: 80.0%, 80/100");
+//        System.out.println("Miara F1 dla usa: 80.0%, 160/200");
+//        System.out.println("Miara F1 dla france: 80.0%, 80/100");
+//        System.out.println("Miara F1 dla uk: 80.0%, 160/200");
+//        System.out.println("Miara F1 dla canada: 80.0%, 80/100");
+//        System.out.println("Miara F1 dla japan: 80.0%, 80/100");
 
 
 
