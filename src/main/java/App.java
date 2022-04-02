@@ -5,8 +5,7 @@ import java.text.ParseException;
 import java.util.*;
 
 import data.Country;
-import knn.Measure;
-import knn.NGramMeasure;
+import knn.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 

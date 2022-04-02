@@ -9,9 +9,14 @@ public class Euclidean implements Metric {
     @Override
     public double calcDistance(HashMap<Integer,Feature> vector1, HashMap<Integer, Feature> vector2) {
         double distance = 0;
-        for (int i = 0; i < vector1.size(); i++) {
-            distance += (vector1.get(i).getDoubleValue() - vector2.get(i).getDoubleValue()) *
-                    (vector1.get(i).getDoubleValue() - vector2.get(i).getDoubleValue());
+        Measure measure = new NGramMeasure();
+        for (int i = 1; i <= vector1.size(); i++) {
+            if (vector1.get(i).getIsTextFeature()) {
+                distance +=
+                        Math.pow(1 - measure.compare(vector1.get(i).getTextValue(), vector2.get(i).getTextValue()), 2);
+            } else {
+                distance += Math.pow((vector1.get(i).getDoubleValue() - vector2.get(i).getDoubleValue()), 2);
+            }
         }
         return Math.sqrt(distance);
     }
