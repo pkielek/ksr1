@@ -5,6 +5,8 @@ import java.text.ParseException;
 import java.util.*;
 
 import data.Country;
+import knn.Measure;
+import knn.NGramMeasure;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -14,6 +16,8 @@ public class App {
         Parser parser = new Parser();
         parser.loadArticles(new File("reut2-000.sgm"),0,1000);
 
+//        Measure measure = new NGramMeasure();
+//        System.out.println(measure.compare("unicocoa", "coconut"));
 //        List<Map<Country, Country>> countryMap = new ArrayList<>();
 //        countryMap.add(Map.of(Country.canada, Country.canada));
 //        countryMap.add(Map.of(Country.canada, Country.uk));
