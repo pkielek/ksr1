@@ -4,8 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
+
 @ToString
-public class Feature {
+public class Feature implements Serializable {
     @Getter @Setter
     private Boolean isTextFeature;
     @Getter @Setter

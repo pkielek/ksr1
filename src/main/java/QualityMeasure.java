@@ -1,22 +1,30 @@
 import data.Country;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.Locale;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtils;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 public class QualityMeasure {
 
     @Getter
     @Setter
-    private List<Map<Country, Country>> actualAndPredicted;
+    private List<HashMap<Country, Country>> actualAndPredicted;
     @Getter
     @Setter
-    private Map<String, Integer> confusionMatrix;
+    private HashMap<String, Integer> confusionMatrix;
 
-    public QualityMeasure(List<Map<Country, Country>> actualAndPredicted) {
+    public QualityMeasure(List<HashMap<Country, Country>> actualAndPredicted) {
         this.actualAndPredicted = actualAndPredicted;
         this.confusionMatrix = new HashMap<>();
         setConfusionMatrix();
@@ -92,4 +100,61 @@ public class QualityMeasure {
                 confusionMatrix.getOrDefault("FN_" + country, 0));
     }
 
+    public String generateLatex(String title){
+        return "\\begin{table}[H]\n"+
+        "\\centering\n"+
+        "\\begin{tabularx}{1\\textwidth}{|>{\\arraybackslash} a|>{\\centering\\arraybackslash}X|>{\\centering\\arraybackslash}X|>{\\centering\\arraybackslash}X|>{\\centering\\arraybackslash}X|}\n"+
+        "\\hline\n"+
+        "\\rowcolor[HTML]{DDDDDD}\n"+
+        "\\textbf{Kraj}&\\textbf{Accuracy}&\\textbf{Precision}&\\textbf{Recall}&\\textbf{F1}  \\\\ \n"+
+        "\\hline\n"+
+        "west-germany & \\cellcolor{almostblack} & "+String.format(Locale.FRANCE,"%,.3f",calcPrecision(Country.westgermany)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcRecall(Country.westgermany)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcF1Score(Country.westgermany)*100)+"\\% \\\\ \n"+
+        "\\hline\n"+
+        "usa & \\cellcolor{almostblack} & "+String.format(Locale.FRANCE,"%,.3f",calcPrecision(Country.usa)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcRecall(Country.usa)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcF1Score(Country.usa)*100)+"\\% \\\\ \n"+
+        "\\hline\n"+
+        "france & \\cellcolor{almostblack} & "+String.format(Locale.FRANCE,"%,.3f",calcPrecision(Country.france)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcRecall(Country.france)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcF1Score(Country.france)*100)+"\\% \\\\ \n"+
+        "\\hline\n"+
+        "uk & \\cellcolor{almostblack} & "+String.format(Locale.FRANCE,"%,.3f",calcPrecision(Country.uk)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcRecall(Country.uk)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcF1Score(Country.uk)*100)+"\\% \\\\ \n"+
+        "\\hline\n"+
+        "canada & \\cellcolor{almostblack} & "+String.format(Locale.FRANCE,"%,.3f",calcPrecision(Country.canada)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcRecall(Country.canada)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcF1Score(Country.canada)*100)+"\\% \\\\ \n"+
+        "\\hline\n"+
+        "japan & \\cellcolor{almostblack} & "+String.format(Locale.FRANCE,"%,.3f",calcPrecision(Country.japan)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcRecall(Country.japan)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcF1Score(Country.japan)*100)+"\\% \\\\ \n"+
+        "\\hline\n"+
+        "Razem & \\textbf{"+String.format(Locale.FRANCE,"%,.3f",calcAccuracy()*100)+"\\%} & "+String.format(Locale.FRANCE,"%,.3f",calcGlobalPrecision()*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcGlobalRecall()*100)+"\\% & \\cellcolor{almostblack} \\\\ \n"+
+        "\\hline\n"+
+        "\\end{tabularx}\n"+
+        "\\caption{"+title+"}\n"+
+        "\\end{table}\n";
+    }
+
+    public String generateBarChart(String filename, String title) throws IOException {
+
+        final DefaultCategoryDataset dataset = new DefaultCategoryDataset( );
+        for(Country country: Country.values()) {
+            dataset.addValue(calcPrecision(country),"Precision",country.name());
+            dataset.addValue(calcRecall(country),"Recall",country.name());
+            dataset.addValue(calcF1Score(country),"Miara F1",country.name());
+        }
+        dataset.addValue(calcAccuracy(),"Accuracy","Razem");
+        dataset.addValue(calcGlobalPrecision(),"Precision","Razem");
+        dataset.addValue(calcGlobalRecall(),"Recall","Razem");
+
+
+        JFreeChart barChart = ChartFactory.createBarChart(
+                title,
+                "Kraj", "Wynik miary",
+                dataset, PlotOrientation.VERTICAL,
+                true, true, false);
+
+        int width = 800;    /* Width of the image */
+        int height = 600;   /* Height of the image */
+        File BarChart = new File( filename+".png" );
+        ChartUtils.saveChartAsPNG(BarChart,barChart,width,height);
+        return "\\begin{figure}[H]\n" +
+                "\\includegraphics[width=1\\textwidth]{wykresy/"+filename+".png}\n" +
+                "\\centering\n" +
+                "\\vspace{-0.3cm}\n" +
+                "\\caption{Średnia minimalna funkcja celu dla algorytmu DE, funkcji schwefel}\n" +
+                "\\end{figure}";
+    }
 }

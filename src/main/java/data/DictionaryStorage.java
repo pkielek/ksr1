@@ -25,7 +25,7 @@ public final class DictionaryStorage {
     public static Dictionary getDictionary(String name) {
         if (!dictionaryMap.containsKey(name)) {
             try {
-                File file = new File(name + ".txt");
+                File file = new File("dictionaries/" + name + ".txt");
                 loadDictionary(name, file);
             }
             catch(IOException exception) {

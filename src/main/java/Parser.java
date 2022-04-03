@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Parser {
@@ -44,22 +45,21 @@ public class Parser {
                 continue;
             }
             // load content of article, with unescaping html entities, and removing Reuters end tag and commas
+            Node textNode = articleNode.childNode(17);
+            Node contentNode = textNode.childNode(textNode.childNodeSize()-1);
             ArrayList<String> content = new ArrayList<>(List.of(StringEscapeUtils.
                     unescapeHtml4(
-                            articleNode.
-                                    childNode(17).
-                                    childNode(4).
+                            contentNode.
                                     toString())
                     .replace(" Reuter \u0003", "")
                     .replace(",", "").split(" ")));
+            content.removeAll(Arrays.asList("",null));
             // calculate publish time (number of minutes from 0 to 1339)
             String articleDatetimeString = articleNode.childNode(1).childNode(0).toString().trim();
-            int articleDateTimeStringLength = articleDatetimeString.length();
-            int offset = articleDateTimeStringLength-22;
+            int offset = articleDatetimeString.indexOf("-")-1;
             int articlePublishTime = Integer.parseInt(articleDatetimeString.substring(11+offset,13+offset))*60+
                     Integer.parseInt(articleDatetimeString.substring(14+offset,16+offset));
             loadedArticles.add(new Article(country,content,articlePublishTime));
-            break;
         }
         return loadedArticlesCurrent;
     }

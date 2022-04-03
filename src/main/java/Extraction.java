@@ -1,13 +1,14 @@
 import data.*;
 import lombok.Getter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.Stream;
 
-public class Extraction {
+public class Extraction implements Serializable {
     @Getter
     private Country country;
     @Getter
@@ -86,9 +87,6 @@ public class Extraction {
                     (word.charAt(0)<65 || word.charAt(0)>90)) {
                 continue;
             }
-            System.out.println(prevWord);
-            System.out.println(word);
-            System.out.println(i);
             count++;
             sum+=word.length();
         }

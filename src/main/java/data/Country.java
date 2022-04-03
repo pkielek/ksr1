@@ -1,5 +1,7 @@
 package data;
 
-public enum Country {
+import java.io.Serializable;
+
+public enum Country implements Serializable {
     westgermany,usa,france,uk,canada,japan
 }
