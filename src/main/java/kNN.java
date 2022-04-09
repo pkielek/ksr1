@@ -31,13 +31,6 @@ public class kNN {
         this.testSet = new ArrayList<>();
         for(int i=0;i<dataSet.size();i++) {
             Extraction extraction = org.apache.commons.lang3.SerializationUtils.clone(dataSet.get(i));
-            ArrayList<Integer> removedFeatures = new ArrayList<>();
-            extraction.getFeatures().forEach((k,v) -> {
-                if(featureWeights.containsKey(k) && !extraction.getFeatures().get(k).getIsTextFeature()) {
-                    extraction.getFeatures().get(k).setDoubleValue(extraction.getFeatures().get(k).getDoubleValue()
-                            *featureWeights.get(k));
-                }
-            });
             if(i<breakpoint) {
                 trainingSet.add(extraction);
             } else {
@@ -52,7 +45,7 @@ public class kNN {
             TreeMap<Double, Country> distanceMap = new TreeMap<>();
             for (Extraction trainingVector : trainingSet) {
                 distanceMap.put(metric
-                        .calcDistance(testVector.getFeatures(), trainingVector.getFeatures(),includedFeatures),
+                        .calcDistance(testVector.getFeatures(), trainingVector.getFeatures(), includedFeatures, featureWeights),
                         trainingVector.getCountry());
             }
             classificationList.add(checkCountry(distanceMap, testVector));
