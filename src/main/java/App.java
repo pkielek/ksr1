@@ -49,14 +49,47 @@ public class App {
         ArrayList<Metric> experimentalMetric = new ArrayList<>(Arrays.asList(new Euclidean(),new Chebyshev(), new Manhattan()));
         ArrayList<String> metricNames = new ArrayList<>(Arrays.asList("Euklidesa","Czebyszewa","Manhattana"));
         ArrayList<ArrayList<Integer>> experimentalFeatureSets = new ArrayList<>();
+        ArrayList<ArrayList<Double>> weightsSets = new ArrayList<>();
         ArrayList<Integer> fset1 = new ArrayList<>(Arrays.asList(1,2,3,4,5,6));
         experimentalFeatureSets.add(fset1);
+        weightSum=0.0;
+        for(Integer feature : fset1) {
+            weightSum+=feature;
+        }
+        HashMap<Integer, Double> weightSet1 = new HashMap<>();
+        for(Integer feature : fset1) {
+            weightSet1.put(feature,baseWeightsList.get(feature-1)/weightSum);
+        }
         ArrayList<Integer> fset2 = new ArrayList<>(Arrays.asList(2,3,5,6,7,8,9,10,11,12));
         experimentalFeatureSets.add(fset2);
+        weightSum=0.0;
+        for(Integer feature : fset2) {
+            weightSum+=feature;
+        }
+        HashMap<Integer, Double> weightSet2 = new HashMap<>();
+        for(Integer feature : fset2) {
+            weightSet2.put(feature,baseWeightsList.get(feature-1)/weightSum);
+        }
         ArrayList<Integer> fset3 = new ArrayList<>(Arrays.asList(1,2,3,4,5,7,8,9,10,11,12));
         experimentalFeatureSets.add(fset3);
+        weightSum=0.0;
+        for(Integer feature : fset3) {
+            weightSum+=feature;
+        }
+        HashMap<Integer, Double> weightSet3 = new HashMap<>();
+        for(Integer feature : fset3) {
+            weightSet3.put(feature,baseWeightsList.get(feature-1)/weightSum);
+        }
         ArrayList<Integer> fset4 = new ArrayList<>(Arrays.asList(1,4,6,7,8,9,10,11,12));
         experimentalFeatureSets.add(fset4);
+        weightSum=0.0;
+        for(Integer feature : fset4) {
+            weightSum+=feature;
+        }
+        HashMap<Integer, Double> weightSet4 = new HashMap<>();
+        for(Integer feature : fset4) {
+            weightSet4.put(feature,baseWeightsList.get(feature-1)/weightSum);
+        }
 
         StringBuilder latex = new StringBuilder();
 
@@ -111,7 +144,7 @@ public class App {
             e2_dataset.addValue(QM.calcGlobalRecall(), "Recall",ratioInInteger+"/"+(100-ratioInInteger));
 
             title = "Wyniki klasyfikacji dla parametrów domyślnych oraz podziału na zbiór uczący "+ratioInInteger+"\\%, zbiór testowy "+(100-ratioInInteger)+"\\%";
-            String chartTitle = "Wyniki klasyfikacji dla parametrów domyślnych oraz podziału na zbiór uczący "+ratioInInteger+"\\%, zbiór testowy "+(100-ratioInInteger)+"\\%";
+            String chartTitle = "Wyniki klasyfikacji dla parametrów domyślnych oraz podziału na zbiór uczący "+ratioInInteger+"%, zbiór testowy "+(100-ratioInInteger)+"%";
             latex.append(QM.generateLatex(title));
             latex.append(QM.generateBarChart("ratio_"+ratio,chartTitle));
         }
