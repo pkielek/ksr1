@@ -112,7 +112,7 @@ public class App {
             e2_dataset.addValue(QM.calcGlobalRecall(), "Recall",ratioInInteger+"/"+(100-ratioInInteger));
 
             title = "Wyniki klasyfikacji dla parametrów domyślnych oraz podziału na zbiór uczący "+ratioInInteger+"\\%, zbiór testowy "+(100-ratioInInteger)+"\\%";
-            String chartTitle = "Wyniki klasyfikacji dla parametrów domyślnych oraz podziału na zbiór uczący "+ratioInInteger+"%, zbiór testowy "+(100-ratioInInteger)+"%";
+            String chartTitle = "Wyniki klasyfikacji dla parametrów domyślnych oraz podziału na zbiór uczący "+ratioInInteger+"\\%, zbiór testowy "+(100-ratioInInteger)+"\\%";
             latex.append(QM.generateLatex(title));
             latex.append(QM.generateBarChart("ratio_"+ratio,chartTitle));
         }
