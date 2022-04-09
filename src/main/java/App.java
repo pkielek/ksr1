@@ -40,7 +40,7 @@ public class App {
         ArrayList<Double> baseWeightsList = new ArrayList<>(Arrays.asList(1.0/1440.0,1.0,0.5,0.15,0.5,1.0,0.4,0.4,0.4,0.4,0.4,0.4));
         Double weightSum = baseWeightsList.stream().reduce(0.0,Double::sum);
         for(int i=1;i<=12;i++) {
-            baseWeights.put(i,baseWeightsList.get(i)/weightSum);
+            baseWeights.put(i,baseWeightsList.get(i-1)/weightSum);
         }
 
         int chartWidth=800;
