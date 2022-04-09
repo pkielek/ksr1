@@ -33,19 +33,11 @@ public class kNN {
             Extraction extraction = org.apache.commons.lang3.SerializationUtils.clone(dataSet.get(i));
             ArrayList<Integer> removedFeatures = new ArrayList<>();
             extraction.getFeatures().forEach((k,v) -> {
-                if(!includedFeatures.contains(k)) {
-                    removedFeatures.add(k);
-                }
-                else if(featureWeights.containsKey(k) && !extraction.getFeatures().get(k).getIsTextFeature()) {
+                if(featureWeights.containsKey(k) && !extraction.getFeatures().get(k).getIsTextFeature()) {
                     extraction.getFeatures().get(k).setDoubleValue(extraction.getFeatures().get(k).getDoubleValue()
                             *featureWeights.get(k));
                 }
             });
-            removedFeatures.forEach(extraction.getFeatures().keySet()::remove);
-            if(!removedFeatures.isEmpty()) {
-                System.out.println(removedFeatures);
-                System.out.println(extraction.getFeatures());
-            }
             if(i<breakpoint) {
                 trainingSet.add(extraction);
             } else {
@@ -54,28 +46,28 @@ public class kNN {
         }
     }
 
-    public List<HashMap<Country, Country>> distance() {
-        List<HashMap<Country, Country>> buff = new ArrayList<>();
+    public List<HashMap<Country, Country>> runAlgorithm() {
+        List<HashMap<Country, Country>> classificationList = new ArrayList<>();
         for (Extraction testVector : testSet) {
-            TreeMap<Double, Country> buff2 = new TreeMap<>();
+            TreeMap<Double, Country> distanceMap = new TreeMap<>();
             for (Extraction trainingVector : trainingSet) {
-                buff2.put(metric
-                        .calcDistance(testVector.getFeatures(), trainingVector.getFeatures()),
+                distanceMap.put(metric
+                        .calcDistance(testVector.getFeatures(), trainingVector.getFeatures(),includedFeatures),
                         trainingVector.getCountry());
             }
-            buff.add(checkCountry(buff2, testVector));
+            classificationList.add(checkCountry(distanceMap, testVector));
         }
-        return buff;
+        return classificationList;
     }
 
-    public HashMap<Country, Country> checkCountry(TreeMap<Double, Country> buff2, Extraction testVector) {
+    public HashMap<Country, Country> checkCountry(TreeMap<Double, Country> distancesMap, Extraction testVector) {
         HashMap<Country, Integer> checkedCountry = new HashMap<>();
         int i=0;
-        for (HashMap.Entry<Double, Country> buff3 : buff2.entrySet()) {
+        for (HashMap.Entry<Double, Country> distanceCountryMap : distancesMap.entrySet()) {
             if(i>=kValue) {
                 break;
             }
-            checkedCountry.put(buff3.getValue(),checkedCountry.getOrDefault(buff3.getValue(),0)+1);
+            checkedCountry.put(distanceCountryMap.getValue(),checkedCountry.getOrDefault(distanceCountryMap.getValue(),0)+1);
             i++;
         }
         HashMap<Country,Country> returnMap = new HashMap<>();

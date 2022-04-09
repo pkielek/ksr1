@@ -1,29 +1,23 @@
 import java.io.File;
 import java.io.IOException;
-import java.sql.Array;
 import java.util.ArrayList;
-import java.sql.SQLOutput;
 import java.text.ParseException;
 import java.util.*;
 
 import data.Article;
-import data.Country;
 import knn.*;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 
 public class App {
     // k: 2 3 5 8 10 15 20 25 30 35
     // training ratio: 0.2,0.35,0.5,0.65,0.8
     // metrics:all
-    // 4 feature sets: 1-6,all-{1,4},all-{6},2-5
+    // 4 feature sets: 1-6,all-{1,4},all-{6},all-{2,3,5}
     public static void runSimulations() throws IOException, ParseException {
         Parser parser = new Parser();
         for(int i=0;i<=20;i++) {
@@ -65,21 +59,28 @@ public class App {
         experimentalFeatureSets.add(fset2);
         ArrayList<Integer> fset3 = new ArrayList<>(Arrays.asList(1,2,3,4,5,7,8,9,10,11,12));
         experimentalFeatureSets.add(fset3);
-        ArrayList<Integer> fset4 = new ArrayList<>(Arrays.asList(2,3,4,5));
+        ArrayList<Integer> fset4 = new ArrayList<>(Arrays.asList(1,4,6,7,8,9,10,11,12));
         experimentalFeatureSets.add(fset4);
 
         StringBuilder latex = new StringBuilder();
 
-        System.out.println("Eksperyment 1: porównanie wartości miary Accuracy dla różnych wartośći parametru k");
-        latex.append("\\subsection{Eksperyment 1}");
-        latex.append("\\subsubsection{Wyniki}");
+        kNN algorithm = new kNN(baseKValue,baseTrainingRatio,baseIncludedFeatures,baseMeasure,baseMetric,extractions,baseWeights);
+        QualityMeasure QM = new QualityMeasure(algorithm.runAlgorithm());
+        String title = "Wyniki klasyfikacji dla parametrów domyślnych";
+        latex.append(QM.generateLatex(title));
+        latex.append(QM.generateBarChart("template",title));
+
+
+        System.out.println("Eksperyment 1: porównanie wartości miary Accuracy dla różnych wartości parametru k");
+        latex.append("\\subsection{Eksperyment 1}\n");
+        latex.append("\\subsubsection{Wyniki}\n");
         DefaultCategoryDataset e1_dataset = new DefaultCategoryDataset();
         for(Integer kvalue : expertimentalKValues) {
             System.out.println("Obecna wartość k: "+kvalue);
-            kNN algorithm = new kNN(kvalue,baseTrainingRatio,baseIncludedFeatures,baseMeasure,baseMetric,extractions,baseWeights);
-            QualityMeasure QM = new QualityMeasure(algorithm.distance());
+            algorithm = new kNN(kvalue,baseTrainingRatio,baseIncludedFeatures,baseMeasure,baseMetric,extractions,baseWeights);
+            QM = new QualityMeasure(algorithm.runAlgorithm());
             e1_dataset.addValue(QM.calcAccuracy(), "Accuracy",kvalue);
-            String title = "Wyniki klasyfikacji dla parametrów domyślnych oraz k="+kvalue;
+            title = "Wyniki klasyfikacji dla parametrów domyślnych oraz k="+kvalue;
             latex.append(QM.generateLatex(title));
             latex.append(QM.generateBarChart("k_"+kvalue,title));
         }
@@ -88,52 +89,57 @@ public class App {
                 "Wartość accuracy",e1_dataset, PlotOrientation.VERTICAL,true,true,false);
         File e1_file = new File("k_summary.png");
         ChartUtils.saveChartAsPNG(e1_file,e1_chart,chartWidth,chartHeight);
+        latex.append("\\subsubsection{Wykres z rezultatami końcowymi eksperymentu}\n");
         latex.append("""
                 \\begin{figure}[H]
                 \\includegraphics[width=1\\textwidth]{wykresy/k_summary.png}
                 \\centering
                 \\vspace{-0.3cm}
-                \\caption{Zmiana wartośći miary Accuracy dla zmiany wartości parametru k}
-                \\end{figure}""");
+                \\caption{Zmiana wartości miary Accuracy dla zmiany wartości parametru k}
+                \\end{figure}
+                """);
 
         System.out.println("Eksperyment 2: porównanie wartości miary Accuracy dla różnych proporcji podziału zbioru");
-        latex.append("\\subsection{Eksperyment 2}");
-        latex.append("\\subsubsection{Wyniki}");
+        latex.append("\\subsection{Eksperyment 2}\n");
+        latex.append("\\subsubsection{Wyniki}\n");
         DefaultCategoryDataset e2_dataset = new DefaultCategoryDataset();
         for(Double ratio : experimentalTrainingRatio) {
             int ratioInInteger = (int) (ratio*100);
             System.out.println("Obecny podział: zbiór uczący "+ratioInInteger+"%, zbiór testowy "+(100-ratioInInteger)+"%");
-            kNN algorithm = new kNN(baseKValue,ratio,baseIncludedFeatures,baseMeasure,baseMetric,extractions,baseWeights);
-            QualityMeasure QM = new QualityMeasure(algorithm.distance());
+            algorithm = new kNN(baseKValue,ratio,baseIncludedFeatures,baseMeasure,baseMetric,extractions,baseWeights);
+            QM = new QualityMeasure(algorithm.runAlgorithm());
             e2_dataset.addValue(QM.calcAccuracy(), "Accuracy",ratioInInteger+"/"+(100-ratioInInteger));
-            String title = "Wyniki klasyfikacji dla parametrów domyślnych oraz podziału na zbiór uczący "+ratioInInteger+"%, zbiór testowy "+(100-ratioInInteger)+"%";
+            title = "Wyniki klasyfikacji dla parametrów domyślnych oraz podziału na zbiór uczący "+ratioInInteger+"\\%, zbiór testowy "+(100-ratioInInteger)+"\\%";
+            String chartTitle = "Wyniki klasyfikacji dla parametrów domyślnych oraz podziału na zbiór uczący "+ratioInInteger+"%, zbiór testowy "+(100-ratioInInteger)+"%";
             latex.append(QM.generateLatex(title));
-            latex.append(QM.generateBarChart("ratio_"+ratio,title));
+            latex.append(QM.generateBarChart("ratio_"+ratio,chartTitle));
         }
-        JFreeChart e2_chart = ChartFactory.createBarChart(
-                "Wartość miary Accuracy dla różnej proporci podziału na zbiór uczący i zbiór testowy","" +
+        JFreeChart e2_chart = ChartFactory.createLineChart(
+                "Wartość miary Accuracy dla różnej proporcji podziału na zbiór uczący i zbiór testowy","" +
                         "Podział na zbiór uczący/zbiór testowy (w procentach)",
                 "Wartość accuracy",e2_dataset, PlotOrientation.VERTICAL,true,true,false);
         File e2_file = new File("ratio_summary.png");
         ChartUtils.saveChartAsPNG(e2_file,e2_chart,chartWidth,chartHeight);
+        latex.append("\\subsubsection{Wykres z rezultatami końcowymi eksperymentu}\n");
         latex.append("""
                 \\begin{figure}[H]
-                \\includegraphics[width=1\\textwidth]{wykresy/metric_summary.png}
+                \\includegraphics[width=1\\textwidth]{wykresy/ratio_summary.png}
                 \\centering
                 \\vspace{-0.3cm}
-                \\caption{Zmiana wartośći miary Accuracy ze względu na metrykę}
-                \\end{figure}""");
+                \\caption{Wartość miary Accuracy dla różnej proporcji podziału na zbiór uczący i zbiór testowy}
+                \\end{figure}
+                """);
 
         System.out.println("Eksperyment 3: porównanie wartości miary Accuracy dla wszystkich badanych metryk");
-        latex.append("\\subsection{Eksperyment 3}");
-        latex.append("\\subsubsection{Wyniki}");
+        latex.append("\\subsection{Eksperyment 3}\n");
+        latex.append("\\subsubsection{Wyniki}\n");
         DefaultCategoryDataset e3_dataset = new DefaultCategoryDataset();
         for(int i=0;i<=2;i++) {
             System.out.println("Obecna metryka: "+metricNames.get(i));
-            kNN algorithm = new kNN(baseKValue,baseTrainingRatio,baseIncludedFeatures,baseMeasure,experimentalMetric.get(i),extractions,baseWeights);
-            QualityMeasure QM = new QualityMeasure(algorithm.distance());
+            algorithm = new kNN(baseKValue,baseTrainingRatio,baseIncludedFeatures,baseMeasure,experimentalMetric.get(i),extractions,baseWeights);
+            QM = new QualityMeasure(algorithm.runAlgorithm());
             e3_dataset.addValue(QM.calcAccuracy(), "Accuracy",metricNames.get(i));
-            String title = "Wyniki klasyfikacji dla parametrów domyślnych oraz metryki "+metricNames.get(i);
+            title = "Wyniki klasyfikacji dla parametrów domyślnych oraz metryki "+metricNames.get(i);
             latex.append(QM.generateLatex(title));
             latex.append(QM.generateBarChart("metric_"+metricNames.get(i),title));
         }
@@ -142,40 +148,44 @@ public class App {
                 "Wartość accuracy",e3_dataset, PlotOrientation.VERTICAL,true,true,false);
         File e3_file = new File("metric_summary.png");
         ChartUtils.saveChartAsPNG(e3_file,e3_chart,chartWidth,chartHeight);
+        latex.append("\\subsubsection{Wykres z rezultatami końcowymi eksperymentu}\n");
         latex.append("""
                 \\begin{figure}[H]
                 \\includegraphics[width=1\\textwidth]{wykresy/metric_summary.png}
                 \\centering
                 \\vspace{-0.3cm}
-                \\caption{Zmiana wartośći miary Accuracy ze względu na metrykę}
-                \\end{figure}""");
+                \\caption{Zmiana wartości miary Accuracy ze względu na metrykę}
+                \\end{figure}
+                """);
 
         System.out.println("Eksperyment 4: porównanie wartości miary Accuracy dla różnych podzbiorów cech");
-        latex.append("\\subsection{Eksperyment 4}");
-        latex.append("\\subsubsection{Wyniki}");
+        latex.append("\\subsection{Eksperyment 4}\n");
+        latex.append("\\subsubsection{Wyniki}\n");
 
         DefaultCategoryDataset e4_dataset = new DefaultCategoryDataset();
         for(int i=0;i<4;i++) {
-            System.out.println("Obecna podzbiór cech: "+(i+1));
-            kNN algorithm = new kNN(baseKValue,baseTrainingRatio,experimentalFeatureSets.get(0),baseMeasure,baseMetric,extractions,baseWeights);
-            QualityMeasure QM = new QualityMeasure(algorithm.distance());
+            System.out.println("Obecny podzbiór cech: "+(i+1));
+            algorithm = new kNN(baseKValue,baseTrainingRatio,experimentalFeatureSets.get(i),baseMeasure,baseMetric,extractions,baseWeights);
+            QM = new QualityMeasure(algorithm.runAlgorithm());
             e4_dataset.addValue(QM.calcAccuracy(), "Accuracy","Zbiór "+(i+1));
-            String title = "Wyniki klasyfikacji dla parametrów domyślnych oraz podzbioru cech nr "+(i+1);
+            title = "Wyniki klasyfikacji dla parametrów domyślnych oraz podzbioru cech nr "+(i+1);
             latex.append(QM.generateLatex(title));
             latex.append(QM.generateBarChart("feature_"+(i+1),title));
         }
-        JFreeChart e4_chart = ChartFactory.createLineChart(
+        JFreeChart e4_chart = ChartFactory.createBarChart(
                 "Wartość miary Accuracy dla każdego z 4 podzbiorów cech","Podzbiór cech",
                 "Wartość accuracy",e4_dataset, PlotOrientation.VERTICAL,true,true,false);
         File e4_file = new File("feature_summary.png");
         ChartUtils.saveChartAsPNG(e4_file,e4_chart,chartWidth,chartHeight);
+        latex.append("\\subsubsection{Wykres z rezultatami końcowymi eksperymentu}\n");
         latex.append("""
                 \\begin{figure}[H]
                 \\includegraphics[width=1\\textwidth]{wykresy/feature_summary.png}
                 \\centering
                 \\vspace{-0.3cm}
-                \\caption{Zmiana wartośći miary Accuracy ze względu na wybór podzbioru cech}
-                \\end{figure}""");
+                \\caption{Zmiana wartości miary Accuracy ze względu na wybór podzbioru cech}
+                \\end{figure}
+                """);
 
         System.out.println(latex);
     }

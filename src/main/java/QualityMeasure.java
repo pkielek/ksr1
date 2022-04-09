@@ -45,7 +45,7 @@ public class QualityMeasure {
                 } else {
                     c = "TN_" + country;
                 }
-                confusionMatrix.put(c, confusionMatrix.getOrDefault(c, 1) + 1);
+                confusionMatrix.put(c, confusionMatrix.getOrDefault(c, 0) + 1);
             }
         }
     }
@@ -64,7 +64,9 @@ public class QualityMeasure {
     }
 
     public double calcPrecision(Country country) {
-        return (double) confusionMatrix.getOrDefault("TP_" + country, 0) /
+        return (confusionMatrix.getOrDefault("TP_" + country, 0) +
+                confusionMatrix.getOrDefault("FP_" + country, 0))==0?0:
+                (double) confusionMatrix.getOrDefault("TP_" + country, 0) /
                 (confusionMatrix.getOrDefault("TP_" + country, 0) +
                         confusionMatrix.getOrDefault("FP_" + country, 0));
     }
@@ -79,7 +81,9 @@ public class QualityMeasure {
     }
 
     public double calcRecall(Country country) {
-        return (double) confusionMatrix.getOrDefault("TP_" + country, 0) /
+        return (confusionMatrix.getOrDefault("TP_" + country, 0) +
+                confusionMatrix.getOrDefault("FN_" + country, 0))==0?0:
+                (double) confusionMatrix.getOrDefault("TP_" + country, 0) /
                 (confusionMatrix.getOrDefault("TP_" + country, 0) +
                         confusionMatrix.getOrDefault("FN_" + country, 0));
     }
@@ -95,7 +99,9 @@ public class QualityMeasure {
 
     public double calcF1Score(Country country) {
         double tp_c = confusionMatrix.getOrDefault("TP_" + country, 0);
-        return (2 * tp_c) /
+        return (2 * tp_c + confusionMatrix.getOrDefault("FP_" + country, 0) +
+                confusionMatrix.getOrDefault("FN_" + country, 0))==0?0:
+                (2 * tp_c) /
                 (2 * tp_c + confusionMatrix.getOrDefault("FP_" + country, 0) +
                 confusionMatrix.getOrDefault("FN_" + country, 0));
     }
@@ -103,24 +109,24 @@ public class QualityMeasure {
     public String generateLatex(String title){
         return "\\begin{table}[H]\n"+
         "\\centering\n"+
-        "\\begin{tabularx}{1\\textwidth}{|>{\\arraybackslash} a|>{\\centering\\arraybackslash}X|>{\\centering\\arraybackslash}X|>{\\centering\\arraybackslash}X|>{\\centering\\arraybackslash}X|}\n"+
+        "\\begin{tabularx}{1\\textwidth}{|>{\\arraybackslash} a|>{\\centering\\arraybackslash}X|>{\\centering\\arraybackslash}X|>{\\centering\\arraybackslash}X|>{\\centering\\arraybackslash}X|>{\\centering\\arraybackslash}X|}\n"+
         "\\hline\n"+
         "\\rowcolor[HTML]{DDDDDD}\n"+
-        "\\textbf{Kraj}&\\textbf{Accuracy}&\\textbf{Precision}&\\textbf{Recall}&\\textbf{F1}  \\\\ \n"+
+        "\\textbf{Kraj}&\\textbf{Accuracy}&\\textbf{Precision}&\\textbf{Recall}&\\textbf{F1}&\\textbf{Liczba tekstów}  \\\\ \n"+
         "\\hline\n"+
-        "west-germany & \\cellcolor{almostblack} & "+String.format(Locale.FRANCE,"%,.3f",calcPrecision(Country.westgermany)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcRecall(Country.westgermany)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcF1Score(Country.westgermany)*100)+"\\% \\\\ \n"+
+        "west-germany & \\cellcolor{almostblack} & "+String.format(Locale.FRANCE,"%,.3f",calcPrecision(Country.westgermany)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcRecall(Country.westgermany)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcF1Score(Country.westgermany)*100)+"\\% & "+getCountryWeight(Country.westgermany)+" \\\\ \n"+
         "\\hline\n"+
-        "usa & \\cellcolor{almostblack} & "+String.format(Locale.FRANCE,"%,.3f",calcPrecision(Country.usa)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcRecall(Country.usa)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcF1Score(Country.usa)*100)+"\\% \\\\ \n"+
+        "usa & \\cellcolor{almostblack} & "+String.format(Locale.FRANCE,"%,.3f",calcPrecision(Country.usa)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcRecall(Country.usa)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcF1Score(Country.usa)*100)+"\\% & "+getCountryWeight(Country.usa)+"\\\\ \n"+
         "\\hline\n"+
-        "france & \\cellcolor{almostblack} & "+String.format(Locale.FRANCE,"%,.3f",calcPrecision(Country.france)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcRecall(Country.france)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcF1Score(Country.france)*100)+"\\% \\\\ \n"+
+        "france & \\cellcolor{almostblack} & "+String.format(Locale.FRANCE,"%,.3f",calcPrecision(Country.france)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcRecall(Country.france)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcF1Score(Country.france)*100)+"\\% & "+getCountryWeight(Country.france)+"\\\\ \n"+
         "\\hline\n"+
-        "uk & \\cellcolor{almostblack} & "+String.format(Locale.FRANCE,"%,.3f",calcPrecision(Country.uk)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcRecall(Country.uk)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcF1Score(Country.uk)*100)+"\\% \\\\ \n"+
+        "uk & \\cellcolor{almostblack} & "+String.format(Locale.FRANCE,"%,.3f",calcPrecision(Country.uk)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcRecall(Country.uk)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcF1Score(Country.uk)*100)+"\\% & "+getCountryWeight(Country.uk)+"\\\\ \n"+
         "\\hline\n"+
-        "canada & \\cellcolor{almostblack} & "+String.format(Locale.FRANCE,"%,.3f",calcPrecision(Country.canada)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcRecall(Country.canada)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcF1Score(Country.canada)*100)+"\\% \\\\ \n"+
+        "canada & \\cellcolor{almostblack} & "+String.format(Locale.FRANCE,"%,.3f",calcPrecision(Country.canada)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcRecall(Country.canada)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcF1Score(Country.canada)*100)+"\\% & "+getCountryWeight(Country.canada)+"\\\\ \n"+
         "\\hline\n"+
-        "japan & \\cellcolor{almostblack} & "+String.format(Locale.FRANCE,"%,.3f",calcPrecision(Country.japan)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcRecall(Country.japan)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcF1Score(Country.japan)*100)+"\\% \\\\ \n"+
+        "japan & \\cellcolor{almostblack} & "+String.format(Locale.FRANCE,"%,.3f",calcPrecision(Country.japan)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcRecall(Country.japan)*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcF1Score(Country.japan)*100)+"\\% & "+getCountryWeight(Country.japan)+"\\\\ \n"+
         "\\hline\n"+
-        "Razem & \\textbf{"+String.format(Locale.FRANCE,"%,.3f",calcAccuracy()*100)+"\\%} & "+String.format(Locale.FRANCE,"%,.3f",calcGlobalPrecision()*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcGlobalRecall()*100)+"\\% & \\cellcolor{almostblack} \\\\ \n"+
+        "Razem & \\textbf{"+String.format(Locale.FRANCE,"%,.3f",calcAccuracy()*100)+"\\%} & "+String.format(Locale.FRANCE,"%,.3f",calcGlobalPrecision()*100)+"\\% & "+String.format(Locale.FRANCE,"%,.3f",calcGlobalRecall()*100)+"\\% & \\cellcolor{almostblack} & "+ actualAndPredicted.size()+" \\\\ \n"+
         "\\hline\n"+
         "\\end{tabularx}\n"+
         "\\caption{"+title+"}\n"+
@@ -154,7 +160,7 @@ public class QualityMeasure {
                 "\\includegraphics[width=1\\textwidth]{wykresy/"+filename+".png}\n" +
                 "\\centering\n" +
                 "\\vspace{-0.3cm}\n" +
-                "\\caption{Średnia minimalna funkcja celu dla algorytmu DE, funkcji schwefel}\n" +
-                "\\end{figure}";
+                "\\caption{"+title+"}\n" +
+                "\\end{figure}\n";
     }
 }

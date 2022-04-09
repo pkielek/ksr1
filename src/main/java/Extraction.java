@@ -14,7 +14,7 @@ public class Extraction implements Serializable {
     @Getter
     private final HashMap<Integer, Feature> features;
     private static final HashSet<String> monthNames = new HashSet<>(Arrays.asList("January","February",
-            "March","April","May","June","July","August","September","October","December"));
+            "March","April","May","June","July","August","September","October","November","December"));
 
     private Extraction() {
         this.features= new HashMap<>();
