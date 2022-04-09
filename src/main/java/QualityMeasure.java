@@ -136,14 +136,15 @@ public class QualityMeasure {
     public String generateBarChart(String filename, String title) throws IOException {
 
         final DefaultCategoryDataset dataset = new DefaultCategoryDataset( );
+        dataset.addValue(calcAccuracy(),"Accuracy","Razem");
+        dataset.addValue(calcGlobalPrecision(),"Precision","Razem");
+        dataset.addValue(calcGlobalRecall(),"Recall","Razem");
         for(Country country: Country.values()) {
             dataset.addValue(calcPrecision(country),"Precision",country.name());
             dataset.addValue(calcRecall(country),"Recall",country.name());
             dataset.addValue(calcF1Score(country),"Miara F1",country.name());
         }
-        dataset.addValue(calcAccuracy(),"Accuracy","Razem");
-        dataset.addValue(calcGlobalPrecision(),"Precision","Razem");
-        dataset.addValue(calcGlobalRecall(),"Recall","Razem");
+
 
 
         JFreeChart barChart = ChartFactory.createBarChart(
