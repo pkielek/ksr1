@@ -205,6 +205,8 @@ public class App {
             algorithm = new kNN(baseKValue,baseTrainingRatio,experimentalFeatureSets.get(i),baseMeasure,baseMetric,extractions,baseWeights);
             QM = new QualityMeasure(algorithm.runAlgorithm());
             e4_dataset.addValue(QM.calcAccuracy(), "Accuracy","Zbiór "+(i+1));
+            e4_dataset.addValue(QM.calcGlobalPrecision(), "Precision","Zbiór "+(i+1));
+            e4_dataset.addValue(QM.calcGlobalRecall(), "Recall","Zbiór "+(i+1));
             title = "Wyniki klasyfikacji dla parametrów domyślnych oraz podzbioru cech nr "+(i+1);
             latex.append(QM.generateLatex(title));
             latex.append(QM.generateBarChart("feature_"+(i+1),title));
